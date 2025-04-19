@@ -29,9 +29,8 @@ app.add_middleware(
 # Définir la structure de la requête
 class NicheRequest(BaseModel):
     niche: str
-
-API_KEY = "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"  # Ton token Hugging Face
-client = InferenceClient(api_key=API_KEY)
+    
+client = InferenceClient(api_key=HF_API_KEY)
 
 @app.post("/authors")
 async def get_authors(req: NicheRequest):
