@@ -18,7 +18,7 @@ app.add_middleware(
 class NicheRequest(BaseModel):
     niche: str
 
-API_KEY = "hf_..."  # Ton token Hugging Face
+API_KEY = "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"  # Ton token Hugging Face
 client = InferenceClient(api_key=API_KEY)
 
 @app.post("/get-authors")
