@@ -1,7 +1,19 @@
+# Securiser la cle API
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from huggingface_hub import InferenceClient
+
+# Pour le local uniquement : charge le .env
+from dotenv import load_dotenv
+load_dotenv()  # lit le .env et injecte dans os.environ
+
+# Récupération de la clé
+HF_API_KEY = os.getenv("HF_API_KEY")
+if not HF_API_KEY:
+    raise RuntimeError("Missing HF_API_KEY in environment")
 
 app = FastAPI()
 
