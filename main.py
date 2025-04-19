@@ -33,7 +33,7 @@ class NicheRequest(BaseModel):
 API_KEY = "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"  # Ton token Hugging Face
 client = InferenceClient(api_key=API_KEY)
 
-@app.post("/get-authors")
+@app.get("/authors")
 async def get_authors(req: NicheRequest):
     prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
 - One name per line 
