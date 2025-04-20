@@ -38,6 +38,7 @@ client = InferenceClient(api_key=HF_API_KEY)
 
 @app.post("/authors")
 async def get_authors(req: NicheRequest):
+    print(f"Requête reçue pour la niche : {niche}")
     prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
 - One name per line 
 - No numbering
