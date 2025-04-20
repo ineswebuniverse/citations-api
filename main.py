@@ -57,3 +57,8 @@ def get_authors(niche: str = ""):
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+#Resoudre Erreur : 127.0.0.1:46476 - "HEAD / HTTP/1.1" 404 Not Found
+@app.get("/")
+def root():
+    return {"message": "Citation API is running."}
+
