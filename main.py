@@ -1,27 +1,42 @@
+# Securiser la cle API
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from huggingface_hub import InferenceClient
+from pydantic import BaseModel
+import uvicorn
+
+# Pour le local uniquement : charge le .env
+from dotenv import load_dotenv
+load_dotenv()  # lit le .env et injecte dans os.environ
+
+# Récupération de la clé
+HF_API_KEY = os.getenv("HF_API_KEY")
+if not HF_API_KEY:
+    raise RuntimeError("Missing HF_API_KEY in environment")
 
 app = FastAPI()
 
 # Autoriser les requêtes depuis ton domaine
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Pour tests, ensuite remplace par ["https://citations-bank.mon-ebbok-pdf.site"]
+    allow_origins=[
+        "https://citations-bank.mon-ebbok-pdf.site",  # your front‑end
+        "http://localhost:8000",                      # for local tests
+        "https://citations-api.onrender.com"          # if you call from itself
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 # Définir la structure de la requête
 class NicheRequest(BaseModel):
     niche: str
+    
+client = InferenceClient(api_key=HF_API_KEY)
 
-API_KEY = "hf_..."  # Ton token Hugging Face
-client = InferenceClient(api_key=API_KEY)
-
-@app.post("/get-authors")
+@app.post("/authors")
 async def get_authors(req: NicheRequest):
     prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
 - One name per line 
