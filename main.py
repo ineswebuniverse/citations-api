@@ -39,23 +39,20 @@ app.add_middleware(
 client = InferenceClient(api_key=HF_API_KEY)
 
 @app.get("/authors")
-def get_authors(niche: str = ""):
+async def get_authors(niche: Optional[str] = ""):
+    prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
+- One name per line 
+- No numbering
+- No extra text"""    
     try:
-        if not niche:
-            return JSONResponse(status_code=400, content={"error": "Niche is required"})
-
-        # Simule une base de données d'auteurs par niche (à adapter)
-        authors_by_niche = {
-            "Marketing": ["Seth Godin", "Simon Sinek", "Philip Kotler"],
-            "Développement personnel": ["Tony Robbins", "Brené Brown", "Robin Sharma"],
-            "Entrepreneuriat": ["Elon Musk", "Gary Vaynerchuk", "Peter Thiel"]
-        }
-
-        authors = authors_by_niche.get(niche, [])
-        return {"authors": authors}
-
+        completion = client.chat.completions.create(
+            model="deepseek-ai/DeepSeek-V3-0324",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500,
+        )
+        return {"authors": completion.choices[0].message.content.strip().split("\n")}
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        return {"error": str(e)}
 
 #Resoudre Erreur : 127.0.0.1:46476 - "HEAD / HTTP/1.1" 404 Not Found
 @app.get("/")
