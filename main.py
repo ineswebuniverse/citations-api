@@ -31,13 +31,13 @@ app.add_middleware(
 )
 
 # Définir la structure de la requête
-class NicheRequest(BaseModel):
-    niche: str
+#class NicheRequest(BaseModel):
+    #niche: str
     
 client = InferenceClient(api_key=HF_API_KEY)
 
 @app.post("/authors")
-async def get_authors(req: NicheRequest):
+async def get_authors(niche: str):
     print(f"Requête reçue pour la niche : {niche}")
     prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
 - One name per line 
