@@ -54,3 +54,6 @@ def get_authors(niche: str = ""):
         authors = authors_by_niche.get(niche, [])
         return {"authors": authors}
 
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
