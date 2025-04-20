@@ -1,4 +1,4 @@
-# Securiser la cle API
+
 import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -54,5 +54,3 @@ def get_authors(niche: str = ""):
         authors = authors_by_niche.get(niche, [])
         return {"authors": authors}
 
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
