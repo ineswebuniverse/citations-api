@@ -6,6 +6,7 @@ from huggingface_hub import InferenceClient
 from pydantic import BaseModel
 import uvicorn
 from typing import Optional
+from fastapi.responses import JSONResponse
 
 # Pour le local uniquement : charge le .env
 from dotenv import load_dotenv
@@ -37,20 +38,21 @@ app.add_middleware(
     
 client = InferenceClient(api_key=HF_API_KEY)
 
-@app.post("/authors")
-async def get_authors(niche: Optional[str] = ""):
-    print(f"Niche reçue : {niche}")
-    prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
-- One name per line 
-- No numbering
-- No extra text"""
-    
+@app.get("/authors")
+def get_authors(niche: str = ""):
     try:
-        completion = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-V3-0324",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-        )
-        return {"authors": completion.choices[0].message.content.strip().split("\n")}
+        if not niche:
+            return JSONResponse(status_code=400, content={"error": "Niche is required"})
+
+        # Simule une base de données d'auteurs par niche (à adapter)
+        authors_by_niche = {
+            "Marketing": ["Seth Godin", "Simon Sinek", "Philip Kotler"],
+            "Développement personnel": ["Tony Robbins", "Brené Brown", "Robin Sharma"],
+            "Entrepreneuriat": ["Elon Musk", "Gary Vaynerchuk", "Peter Thiel"]
+        }
+
+        authors = authors_by_niche.get(niche, [])
+        return {"authors": authors}
+
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(status_code=500, content={"error": str(e)})
