@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from huggingface_hub import InferenceClient
 from pydantic import BaseModel
 import uvicorn
+from typing import Optional
 
 # Pour le local uniquement : charge le .env
 from dotenv import load_dotenv
@@ -37,8 +38,8 @@ app.add_middleware(
 client = InferenceClient(api_key=HF_API_KEY)
 
 @app.post("/authors")
-async def get_authors(niche: str):
-    print(f"Requête reçue pour la niche : {niche}")
+async def get_authors(niche: Optional[str] = ""):
+    print(f"Niche reçue : {niche}")
     prompt = f"""List 10 authors famous in the "{req.niche}" field for their quotes. 
 - One name per line 
 - No numbering
