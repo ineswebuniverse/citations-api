@@ -40,19 +40,26 @@ client = InferenceClient(api_key=HF_API_KEY)
 
 @app.get("/authors")
 async def get_authors(niche: Optional[str] = ""):
+    if not niche:
+        return JSONResponse(status_code=400, content={"error": "Niche is required"})
+
     prompt = f"""List 10 authors famous in the "{niche}" field for their quotes. 
 - One name per line 
 - No numbering
-- No extra text"""    
+- No extra text"""
+
     try:
         completion = client.chat.completions.create(
             model="deepseek-ai/DeepSeek-V3-0324",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=500,
         )
-        return {"authors": completion.choices[0].message.content.strip().split("\n")}
+        authors = completion.choices[0].message.content.strip().split("\n")
+        return {"authors": authors}
+        
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 
 #Resoudre Erreur : 127.0.0.1:46476 - "HEAD / HTTP/1.1" 404 Not Found
 @app.get("/")
