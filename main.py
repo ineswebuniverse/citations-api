@@ -1,4 +1,3 @@
-
 import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,20 +41,26 @@ client = InferenceClient(api_key=HF_API_KEY)
 @app.get("/authors")
 async def get_authors(niche: Optional[str] = ""):
     prompt = f"""
-    Give me a list of 10 famous authors known for their impactful quotes in the niche "{niche}".
-    Display only author names, each on a separate line.
-    Format:[Name]
-    No extra text.
-    """
+Give me a list of 10 famous authors known for their impactful quotes in the niche "{niche}".
+- Only show the names
+- One name per line
+- No numbering
+- No extra explanation
+"""
     try:
-        completion = client.chat.completions.create(
-            model="HuggingFaceH4/zephyr-7b-beta",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=800,
+        # Appel adapté pour le modèle Mistral
+        response = client.text_generation(
+            prompt=prompt,
+            model="mistralai/Mistral-7B-Instruct-v0.2",
+            max_new_tokens=300,
+            temperature=0.7
         )
-        return {"result": completion.choices[0].message.content.strip()}
+        # Nettoyage et découpage en lignes
+        authors = [line.strip() for line in response.split("\n") if line.strip()]
+        return {"authors": authors}
+
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 #----------------
 #Resoudre Erreur : 127.0.0.1:46476 - "HEAD / HTTP/1.1" 404 Not Found
