@@ -43,8 +43,8 @@ client = InferenceClient(api_key=HF_API_KEY)
 async def get_authors(niche: Optional[str] = ""):
     prompt = f"""
     Give me a list of 10 famous authors known for their impactful quotes in the niche "{niche}".
-    Format:
-    Author: [Name]
+    Display only author names, each on a separate line.
+    Format:[Name]
     No extra text.
     """
     try:
